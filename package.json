@@ -1,0 +1,14 @@
+{
+  "name"         : "node-web-scrape",
+  "version"      : "0.0.1",
+  "description"  : "Scrape web page.",
+  "main"         : "main.js",
+  "author"       : "Hans WANG",
+  "dependencies" : {
+    "express"    : "latest",
+    "request"    : "latest",
+    "cheerio"    : "latest",
+    "iconv"      : "latest",
+    "sleep"      : "latest"
+  }
+}
