@@ -6,16 +6,24 @@ var sleep = require('sleep');
 fs.readFile('book2/index.json', function(err, data) {
     if (err) throw err;
     var list = JSON.parse(data);
-    processList(list);
+
+    var i = 214,
+        end = list.length;
+    processChapter(i+1, end, list);
 });
 
-function processList(list) {
-    for (var i = 0; i < list.length; i++) {
-        processChapter(i+1, list[i]);
-    }
-}
+//  function processList(list) {
+//      for (var i = 2; i < list.length; i++) {
+//          processChapter(i+1, list[i]);
+//      }
+//  }
 
-function processChapter(i, chpt) {
+
+function processChapter(i, end, list) {
+    if (i >= end) {
+        return;
+    }
+    var chpt = list[i-1];
     var fn = String('000'+i).slice(-3) + chpt.title + '.html';
     var url = chpt.url;
 
@@ -25,13 +33,16 @@ function processChapter(i, chpt) {
             return;
         }
 
-        var ic = new iconv.Iconv('gbk', 'utf-8');
-        var str = ic.convert(html).toString('utf-8');
+        //var ic = new iconv.Iconv('gbk', 'utf-8');
+        //var str = ic.convert(html).toString('utf-8');
+        var str = html;
 
+        fs.writeFileSync('book2/chapter/' + fn, str, 'utf8');
         fs.writeFile('book2/chapter/' + fn, str, 'utf8', function(err) {
-            console.log(i + ' file written success');
-            sleep.sleep(20);
-        })
+            console.log(i + ' file saved at ' + Date());
+            sleep.sleep(3);
+            processChapter(i+1, end, list);
+        });
     });
 }
 
