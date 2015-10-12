@@ -1,7 +1,8 @@
 var fs = require('fs');
 var request = require('request');
+var iconv = require('iconv');
 
-url = 'http://quanben-xiaoshuo.com/xiaoshuo/5/jipinjiading.html';
+url = 'http://baishuku.com/html/29/29363/';
 
 request(url, function(error, response, html) {
     if (error) {
@@ -9,7 +10,11 @@ request(url, function(error, response, html) {
         return;
     }
 
-    fs.writeFile('book2/index-src.html', html, function(err) {
+    var ic = new iconv.Iconv('gbk', 'utf-8');
+    var str = ic.convert(html).toString('utf-8');
+    //var str = html;
+
+    fs.writeFile('book3/index-src.html', str, 'utf8', function(err) {
         console.log('Source HTML file written success');
     })
 });

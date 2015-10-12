@@ -3,21 +3,14 @@ var fs = require('fs');
 var iconv = require('iconv');
 var sleep = require('sleep');
 
-fs.readFile('book2/index.json', function(err, data) {
+fs.readFile('book3/index.json', function(err, data) {
     if (err) throw err;
     var list = JSON.parse(data);
 
-    var i = 214,
+    var i = 1,
         end = list.length;
     processChapter(i+1, end, list);
 });
-
-//  function processList(list) {
-//      for (var i = 2; i < list.length; i++) {
-//          processChapter(i+1, list[i]);
-//      }
-//  }
-
 
 function processChapter(i, end, list) {
     if (i >= end) {
@@ -33,12 +26,12 @@ function processChapter(i, end, list) {
             return;
         }
 
-        //var ic = new iconv.Iconv('gbk', 'utf-8');
-        //var str = ic.convert(html).toString('utf-8');
-        var str = html;
+        var ic = new iconv.Iconv('gbk', 'utf-8');
+        var str = ic.convert(html).toString('utf-8');
+        //var str = html;
 
-        fs.writeFileSync('book2/chapter/' + fn, str, 'utf8');
-        fs.writeFile('book2/chapter/' + fn, str, 'utf8', function(err) {
+        fs.writeFileSync('book3/chapter/' + fn, str, 'utf8');
+        fs.writeFile('book3/chapter/' + fn, str, 'utf8', function(err) {
             console.log(i + ' file saved at ' + Date());
             sleep.sleep(3);
             processChapter(i+1, end, list);
