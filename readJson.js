@@ -1,40 +1,35 @@
-var request = require('request');
-var fs = require('fs');
-var iconv = require('iconv');
-var sleep = require('sleep');
+var http = require('http'),
+    fs = require('fs'),
+    sleep = require('sleep'),
+    brand = 'cw';
 
-fs.readFile('book3/index.json', function(err, data) {
+fs.readFile(brand + '/index.json', function(err, data) {
     if (err) throw err;
-    var list = JSON.parse(data);
-
-    var i = 1,
+    var list = JSON.parse(data),
+        i = 0,
         end = list.length;
-    processChapter(i+1, end, list);
+    processItem(i+1, end, list);
 });
 
-function processChapter(i, end, list) {
-    if (i >= end) {
+function processItem(i, end, list) {
+    if (i > end) {
         return;
     }
-    var chpt = list[i-1];
-    var fn = String('000'+i).slice(-3) + chpt.title + '.html';
-    var url = chpt.url;
+    var item = list[i-1],
+        fn = item.filename,
+        url = item.img,
+        f = fs.createWriteStream(brand + '/images/' + fn);
 
-    request({url: url, encoding: null}, function(error, response, html) {
-        if (error) {
-            console.log('error occur in request' + url);
-            return;
-        }
-
-        var ic = new iconv.Iconv('gbk', 'utf-8');
-        var str = ic.convert(html).toString('utf-8');
-        //var str = html;
-
-        fs.writeFileSync('book3/chapter/' + fn, str, 'utf8');
-        fs.writeFile('book3/chapter/' + fn, str, 'utf8', function(err) {
-            console.log(i + ' file saved at ' + Date());
+    http.get(url, function(res) {
+        console.log('ResponseCode: ' + res.statusCode);
+        res.on('data', function (chunk) {
+            f.write(chunk);
+        });
+        res.on('end', function (chunk) {
+            f.end();
+            console.log(i + "image saved");
             sleep.sleep(3);
-            processChapter(i+1, end, list);
+            processItem(i+1, end, list);
         });
     });
 }
