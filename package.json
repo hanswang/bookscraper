@@ -8,8 +8,8 @@
     "express"    : "latest",
     "request"    : "latest",
     "cheerio"    : "latest",
-    "sleep"      : "latest"
-    "http"      : "latest"
+    "sleep"      : "latest",
+    "http"       : "latest",
     "async"      : "latest"
   }
 }
