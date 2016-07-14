@@ -2,8 +2,8 @@ var fs = require('fs'),
     sleep = require('sleep'),
     request = require('request'),
     url = 'http://www.ausomg.com/goods/search.htm?',
-    param = {supplierId: 10, pageNo: 1},
-    brand = [
+    param = ['supplierId', 'pageNo'],
+    brands = [
                 {name: 'cw', supId: 10, count: 72},
                 {name: 'coles', supId: 22, count: 11},
                 {name: 'wt', supId: 17, count: 3},
@@ -13,18 +13,26 @@ var fs = require('fs'),
                 {name: 'myer', supId: 24, count: 1}
             ];
 
-async.eachOfSeries(imgList, function(img, id, callback) {
-    request(url, function(error, response, html) {
-        if (error) {
-            console.log('error occur in request');
-            return;
-        }
+async.eachOfSeries(brands, function(brand, id, callback) {
 
-        var str = html;
+    async.timesSeries(brand.count, function (n, next) {
+        var fmt_url = url + param[0] + '=' + brand.supId + '&' + param[1] + '=' + (n+1);
 
-        fs.writeFile('cw/01.html', str, 'utf8', function(err) {
-            console.log('Source HTML file written success');
-        })
+        request(fmt_url, function(error, response, html) {
+            if (error) {
+                console.log('error occur in request');
+                return;
+            }
+
+            var p = String('0000'+(n+1)).slice(-4);
+
+            fs.writeFile('content/html/' + brand.name + p + '.htm', html, 'utf8', function(ferr) {
+                if (ferr) throw ferr;
+                console.log('Source HTML (' + brand.name + p + ') file written success');
+
+                next(err, )
+            })
+        });
     });
 }, function (err) {
     if (err) {
