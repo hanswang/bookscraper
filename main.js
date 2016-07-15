@@ -15,24 +15,35 @@ var fs = require('fs'),
 
 async.eachOfSeries(brands, function(brand, id, callback) {
 
+    var htmlDownloaderWrapper = function (id, callback) {
+        callback(null, {
+            id: brand.name + id
+        }):
+    };
+
     async.timesSeries(brand.count, function (n, next) {
-        var fmt_url = url + param[0] + '=' + brand.supId + '&' + param[1] + '=' + (n+1);
+        htmlDownloaderWrapper(n, function (err, url) {
+            var fmt_url = url + param[0] + '=' + brand.supId + '&' + param[1] + '=' + (n+1);
 
-        request(fmt_url, function(error, response, html) {
-            if (error) {
-                console.log('error occur in request');
-                return;
-            }
+            request(fmt_url, function(error, response, html) {
+                if (error) {
+                    console.log('error occur in request');
+                    return;
+                }
 
-            var p = String('0000'+(n+1)).slice(-4);
+                var p = String('0000'+(n+1)).slice(-4);
 
-            fs.writeFile('content/html/' + brand.name + p + '.htm', html, 'utf8', function(ferr) {
-                if (ferr) throw ferr;
-                console.log('Source HTML (' + brand.name + p + ') file written success');
+                fs.writeFile('content/html/' + brand.name + p + '.htm', html, 'utf8', function(ferr) {
+                    if (ferr) throw ferr;
+                    console.log('Source HTML (' + brand.name + p + ') file written success');
 
-                next(err, )
-            })
+                    next(err, url);
+                });
+            });
         });
+    }, function (err, urls) {
+        console.log(brand.name + ' has all downloaded for ' + brand.count + ' htms');
+        console.log(urls);
     });
 }, function (err) {
     if (err) {
