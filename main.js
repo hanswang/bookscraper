@@ -1,6 +1,7 @@
 var fs = require('fs'),
     sleep = require('sleep'),
     request = require('request'),
+    async = require('async'),
     url = 'http://www.ausomg.com/goods/search.htm?',
     param = ['supplierId', 'pageNo'],
     brands = [
@@ -13,16 +14,16 @@ var fs = require('fs'),
                 {name: 'myer', supId: 24, count: 1}
             ];
 
-async.eachOfSeries(brands, function(brand, id, callback) {
+async.eachOfSeries(brands, function(brand, id, brand_callback) {
 
     var htmlDownloaderWrapper = function (id, callback) {
         callback(null, {
-            id: brand.name + id
-        }):
+            id: brand.name + '-' + id
+        });
     };
 
     async.timesSeries(brand.count, function (n, next) {
-        htmlDownloaderWrapper(n, function (err, url) {
+        htmlDownloaderWrapper(n, function (err, i_url) {
             var fmt_url = url + param[0] + '=' + brand.supId + '&' + param[1] + '=' + (n+1);
 
             request(fmt_url, function(error, response, html) {
@@ -37,14 +38,20 @@ async.eachOfSeries(brands, function(brand, id, callback) {
                     if (ferr) throw ferr;
                     console.log('Source HTML (' + brand.name + p + ') file written success');
 
-                    next(err, url);
+                    sleep.sleep(5);
+
+                    next(err, i_url);
                 });
             });
         });
     }, function (err, urls) {
         console.log(brand.name + ' has all downloaded for ' + brand.count + ' htms');
         console.log(urls);
+        sleep.sleep(10);
+        console.log('switching to next brand');
+        brand_callback();
     });
+
 }, function (err) {
     if (err) {
         console.log(err.message);
