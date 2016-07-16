@@ -12,10 +12,10 @@ var cheerio = require('cheerio'),
                 {name: 'myer', supId: 24, count: 1}
             ];
 
-async.eachOfSeries(brands, function(brand, id, brand_callback) {
+async.eachSeries(brands, function(brand, brand_callback) {
 
-    var htmlParserWrapper = function (id, callback) {
-        var p = String('0000'+(id+1)).slice(-4),
+    var htmlParserWrapper = function (hid, callback) {
+        var p = String('0000'+(hid+1)).slice(-4),
             fn = 'content/html/' + brand.name + p + '.htm',
             list = [];
 
@@ -29,7 +29,7 @@ async.eachOfSeries(brands, function(brand, id, brand_callback) {
                 item.title = $(ele).find('div.txt .tit span.imp').text();
                 item.price = $(ele).find('div.txt .price span.price-span').last().text();
                 item.ref_price = $(ele).find('div.txt .ops span.pri').text();
-                item.filename = String('0000'+(i+1)).slice(-4) + '.jpg';
+                item.filename = brand.name + String('0000'+(hid*20+i+1)).slice(-4) + '.jpg';
 
                 if (item.title.length > 0) {
                     list.push(item);
@@ -42,7 +42,6 @@ async.eachOfSeries(brands, function(brand, id, brand_callback) {
 
     async.timesSeries(brand.count, function (n, next) {
         htmlParserWrapper(n, function (err, i_list) {
-            console.log('list length: ' + i_list.length);
             next(err, i_list);
         });
     }, function (err, lists) {
