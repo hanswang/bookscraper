@@ -10,6 +10,7 @@
     "cheerio"    : "latest",
     "sleep"      : "latest",
     "http"       : "latest",
-    "async"      : "latest"
+    "async"      : "latest",
+    "mysql"      : "latest"
   }
 }
