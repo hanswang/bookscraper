@@ -4,18 +4,18 @@ var fs = require('fs'),
     mysql = require('mysql'),
     brands = [
                 {name: 'cw', tag: 'ChemistWarehouse'},
-                {name: 'woolies', tag: 'WoolWorth'}
-                // {name: 'wt', supId: 17, count: 3},
-                // {name: 'priceline', supId: 25, count: 3},
-                // {name: 'aldi', supId: 14, count: 3},
-                // {name: 'coles', supId: 22, count: 11},
-                // {name: 'myer', supId: 24, count: 1}
+                {name: 'woolies', tag: 'WoolWorth'},
+                {name: 'wt', tag: 'Zhiyougou'},
+                {name: 'priceline', tag: 'Priceline'},
+                {name: 'aldi', tag: 'ALDI'},
+                {name: 'coles', tag: 'Coles'},
+                {name: 'myer', tag: 'MYER'}
             ];
 
 var conn = mysql.createConnection({
         host: 'localhost',
-        user: 'zyg',
-        password: 'zygpass',
+        user: 'wlaner',
+        password: '2FX572Zv',
         database: 'zyg'
     });
 
@@ -39,8 +39,8 @@ async.eachSeries(brands, function(brand, brand_callback) {
                 var product = {
                     name : item.title,
                     img : item.filename,
-                    price : item.price,
-                    rmb_price : item.ref_price
+                    price : item.price.substr(item.price.indexOf('$') + 1),
+                    rmb_price : item.ref_price.substr(item.ref_price.indexOf('￥') + 1)
                 };
 
                 conn.query('INSERT INTO product SET ?', product, function(err, res) {
